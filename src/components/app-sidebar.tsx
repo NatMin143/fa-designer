@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 
 export function AppSideBar() {
-  const [isActive, setIsActive] = useState<string>("Home");
+  const [isActive, setIsActive] = useState<string>("Visualiser");
 
   const handleClick = (menuName: string) => {
     setIsActive(menuName);
@@ -39,7 +39,7 @@ export function AppSideBar() {
           to: "/",
         },
         {
-          label: "Model",
+          label: "Definition",
           to: "/model",
         },
         {
@@ -54,7 +54,7 @@ export function AppSideBar() {
     <Sidebar>
       <SidebarHeader onClick={() => setIsActive("Home")}>
         <Link to="/" className="flex items-cente gap-1">
-          <span className="text-xl font-bold">Nat FA Designer</span>
+          <span className="text-xl font-bold">FA Simulator</span>
         </Link>
       </SidebarHeader>
 

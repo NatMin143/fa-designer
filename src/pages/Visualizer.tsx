@@ -7,7 +7,7 @@ const Visualizer = () => {
     Record<number, "pending" | "accepted" | "wrong">
   >({});
   const [isDeadState, setIsDeadState] = useState<boolean>(false);
-
+  const [wrongLineIndex, setWrongLineIndex] = useState<number>(-1);
   const pattern = "xxx.xxx.xxx.xxx";
 
   const previousInput = useRef("");
@@ -23,6 +23,19 @@ const Visualizer = () => {
       const expectedChar = pattern[i];
       const currentChar = value[i];
 
+      // If input is longer than 15, mark everything as wrong and set dead state
+      if (value.length > 15) {
+        setWrongLineIndex(15)
+        for (let i = 0; i < value.length; i++) {
+          newStatus[i] = "wrong";
+        }
+        setStatus(newStatus);
+        setIsDeadState(true);
+        previousInput.current = value;
+        previousDsStatus.current = true;
+        return;
+      }
+
       if (dead) {
         newStatus[i] = "wrong";
         continue;
@@ -35,11 +48,17 @@ const Visualizer = () => {
 
       if (expectedChar === "x") {
         const checkChar = /\d/.test(currentChar) ? "accepted" : "wrong";
-        if (checkChar === "wrong") dead = true;
+        if (checkChar === "wrong") {
+          dead = true;
+          setWrongLineIndex(i);
+        }
         newStatus[i] = checkChar;
       } else if (expectedChar === ".") {
         const checkChar = currentChar === "." ? "accepted" : "wrong";
-        if (checkChar === "wrong") dead = true;
+        if (checkChar === "wrong") {
+          dead = true;
+          setWrongLineIndex(i)
+        }
         newStatus[i] = checkChar;
       }
     }
@@ -54,14 +73,13 @@ const Visualizer = () => {
 
   // Log status whenever it updates
   useEffect(() => {
-    console.log(status);
-  }, [status]);
+    console.log(wrongLineIndex);
+  }, [wrongLineIndex]);
 
   return (
     <div>
       <input
         type="text"
-        maxLength={15}
         value={input}
         onChange={handleChange}
         className="border p-2 rounded-md w-[400px] mb-4"
@@ -70,7 +88,7 @@ const Visualizer = () => {
 
       {/*THIS IS FOR THE SVG*/}
       <div>
-        <StateMachine status={status} isDeadState={isDeadState} />
+        <StateMachine status={status} isDeadState={isDeadState} wrongLineIndex={wrongLineIndex}/>
       </div>
     </div>
   );
